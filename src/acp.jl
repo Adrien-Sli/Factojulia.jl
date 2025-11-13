@@ -20,15 +20,46 @@ Outputs : results of the pca analysis
 -
 -
 """
-function pca()
-    ## compute pca
+function pca(df::DataFrame; scale::Bool = true, dropmissing_flag::Bool = true)
 
+    numcols = [name for name in names(df) if eltype(skipmissing(df[!, name])) <: Number] # select num columns
+    num_df = df[:, numcols]
+
+    if dropmissing_flag
+        ### Drop missing lines if true
+        num_df = dropmissing(num_df)
+    end
+
+    X = Matrix(num_df) # convert for matrix operations
+
+    # Compute cov / corr matrix
+    cov_mat = scale ? cor(X) : cov(X)
+    println("Matrice de cov / corr :")
+    println(round.(cov_mat, digits = 3))
+
+    Xc = X .-mean(X, dims = 1)
+    if scale
+        #### Compute scaling if true
+        sds = std(X, dims=1, corrected = true)
+        sds[sds .==0.0] .= 1.0
+        Xc .= Xc ./ sds
+    end
+
+    ### Compute pca
+    pca = fit(PCA, Xc; maxoutdim = size(Xc, 2))
+    ## Compute needed values
+    ### Scores
+    scores = MultivariateStats.transform(pca, Xc)
+    ### eigen values
+    eigvals = principalvars(pca)
+    ### loadings
+    loadings = pca.proj
 
     # Plots (render in browser)
     ## Scree Plot
-    var_exp = [0.45, 0.25, 0.15, 0.10, 0.05]
+    var_exp = eigvals / sum(eigvals)
     cum_var = cumsum(var_exp)
-    PCs = 1:length(var_exp)
+    PCs = 1:length(eigvals)
 
     fig = Figure()
     ax = Axis(fig[1,1], title="Scree Plot", xlabel="PC", ylabel="Variance (%)")
@@ -81,4 +112,7 @@ function pca()
             hover_label.text[] = ""
         end
     end
+
+    return(cov_mat = cov_mat, model = pca, scores = scores, loadings = loadings)
+
 end
