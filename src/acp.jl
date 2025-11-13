@@ -1,62 +1,66 @@
 say_hello() = print("hello") # test fonctionnement package
 
 """
-Function that compute a standart pca
+    pre_data(df::DataFrame; scale::Bool=true, dropmissing_flag::Bool=true)
 
-Inputs : X should be either a 
+Prepare the data for a Principal Component Analysis (scaling, center, missing values handling).
+All numerical columns are automatically selected (if no numerical columns are in the dataset, return an error).
 
-
-Outputs : results of the pca analysis
-- 
-- 
--
--
--
--
--
--
--
--
--
--
+# Returns
+- `X::Matrix`: prepared data matrix
+- `numcols::Vector{Symbol}`: names of numeric columns
 """
-function pca(df::DataFrame; scale::Bool = true, dropmissing_flag::Bool = true)
+function pre_data(df::DataFrame; scale::Bool=true, dropmissing_flag::Bool=true)
+    # Select numeric columns
+    numcols = [c for c in names(df) if eltype(skipmissing(df[!, c])) <: Number]
+    @assert !isempty(numcols) "No numeric columns found in DataFrame."
 
-    numcols = [name for name in names(df) if eltype(skipmissing(df[!, name])) <: Number] # select num columns
-    num_df = df[:, numcols]
+    # Drop missing values if requested
+    num_df = dropmissing_flag ? dropmissing(df[:, numcols]) : df[:, numcols]
 
-    if dropmissing_flag
-        ### Drop missing lines if true
-        num_df = dropmissing(num_df)
-    end
+    # Convert to matrix
+    X = Matrix(num_df)
 
-    X = Matrix(num_df) # convert for matrix operations
+    return X, numcols
+end
 
-    # Compute cov / corr matrix
-    cov_mat = scale ? cor(X) : cov(X)
-    println("Matrice de cov / corr :")
-    println(round.(cov_mat, digits = 3))
+"""
+    run_pca(X::Matrix; scale::Bool=true)
 
-    Xc = X .-mean(X, dims = 1)
-    if scale
-        #### Compute scaling if true
-        sds = std(X, dims=1, corrected = true)
-        sds[sds .==0.0] .= 1.0
-        Xc .= Xc ./ sds
-    end
+Perform a Principal Component Analysis using MultivariateStats on the prepared numeric matrix.
 
-    ### Compute pca
-    pca = fit(PCA, Xc; maxoutdim = size(Xc, 2))
-    ## Compute needed values
-    ### Scores
-    scores = MultivariateStats.transform(pca, Xc)
-    ### eigen values
-    eigvals = principalvars(pca)
-    ### loadings
-    loadings = pca.proj
+# Returns
+Named tuple with:
+- `model`: fitted PCA model
+- `scores`: PCA-transformed data
+- `loadings`: PCA loadings (projection matrix)
+- `eigvals`: eigenvalues (principal variances)
+- `var_exp`: explained variance ratio
+"""
+function run_pca(X::Matrix; scale::Bool=true)
+    model = fit(PCA, X; maxoutdim=size(X,2), mean=true, std=scale)
+    scores = transform(model, X)
+    eigvals = principalvars(model)
+    loadings = projection(model)
+    var_exp = eigvals ./ sum(eigvals)
 
-    # Plots (render in browser)
-    ## Scree Plot
+    return (model=model, scores=scores, loadings=loadings,
+            eigvals=eigvals, var_exp=var_exp)
+end
+
+"""
+    plot_pca(pca_results)
+
+Display PCA plots (scree plot, biplot, etc.) and handle interactivity.
+
+This function should:
+- Create a scree plot (variance explained)
+- Add optional hover labels or tooltips
+- Possibly render a biplot (scores vs. loadings)
+- Display figures interactively
+"""
+
+function plot_pca(pca_results)
     var_exp = eigvals / sum(eigvals)
     cum_var = cumsum(var_exp)
     PCs = 1:length(eigvals)
@@ -112,7 +116,40 @@ function pca(df::DataFrame; scale::Bool = true, dropmissing_flag::Bool = true)
             hover_label.text[] = ""
         end
     end
+end
 
-    return(cov_mat = cov_mat, model = pca, scores = scores, loadings = loadings)
+"""
+    pca_analysis(df::DataFrame; scale::Bool=true, dropmissing_flag::Bool=true, showplots::Bool=true)
 
+Full PCA workflow: prepare data, run PCA, and optionally show plots.
+
+# Keyword Arguments
+- `scale::Bool`: if true, standardize variables
+- `dropmissing_flag::Bool`: if true, remove rows with missing values
+- `showplots::Bool`: if true, display interactive plots (default: true)
+
+# Returns
+Named tuple of PCA results.
+"""
+function pca_analysis(df::DataFrame; scale::Bool=true, dropmissing_flag::Bool=true, showplots::Bool=true)
+    # Step 1 — Data preparation
+    X, numcols = pre_data(df; scale=scale, dropmissing_flag=dropmissing_flag)
+
+    # Step 2 — Run PCA
+    pca_res = run_pca(X; scale=scale)
+
+    # Step 3 — Optional plotting
+    if showplots
+        plot_pca(pca_res)
+    end
+
+    # Step 4 — Return computed results
+    return (
+        columns = numcols,
+        model = pca_res.model,
+        scores = pca_res.scores,
+        loadings = pca_res.loadings,
+        eigvals = pca_res.eigvals,
+        var_exp = pca_res.var_exp
+    )
 end

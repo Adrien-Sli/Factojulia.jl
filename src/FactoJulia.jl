@@ -4,8 +4,7 @@ module FactoJulia
 # Package for factorial analysis
 using CSV, DataFrames, Statistics, LinearAlgebra, MultivariateStats
 using Bonito # reactivity (zpp ?)
-using WGLMakie # graphs
-using Makie
+using WGLMakie, Makie # graphs
 
 
 include("acp.jl") # acp tools and visualisations
