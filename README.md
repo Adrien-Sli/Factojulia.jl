@@ -90,4 +90,4 @@ FactoJulia.jl/
 
 If you use FactoJulia.jl in your work, please mention it in your publication, project, or report. A simple citation like the following is appreciated:
 
->  PCA analysis was performed using the [FactoJulia.jl package by Adrien, Osias, Val, Miller, Haajmi](https://github.com/Adrien-Sli/Factojulia.jl).
+>  PCA analysis was performed using the [FactoJulia.jl package](https://github.com/Adrien-Sli/Factojulia.jl) by [Stave Icnel Dany OSIAS](https://github.com/Dacossti), [Adrien SLIFIRSKI](https://github.com/valjudlin-lgtm), [Keevson Judlin VAL](https://github.com/valjudlin-lgtm), [Miller ABESSOLO](https://github.com/jeffrey191), [Hanaa HAJMI](https://github.com/HanaaHajmi).
