@@ -22,7 +22,7 @@
 
 ```julia
 using Pkg
-Pkg.add("https://github.com/yourusername/FactoJulia.jl.git")
+Pkg.add("https://github.com/Adrien-Sli/Factojulia.jl.git")
 ```
 
 Or, for development:
