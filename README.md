@@ -39,6 +39,8 @@ using CSV, DataFrames
 
 # Load a dataset
 df = CSV.read("PATH TO YOUR DATA.csv", DataFrame)
+# or if you wish to quickly check correct installation, uncomment the line below and remove the previous one 
+# df = CSV.read("test/test_data.csv", DataFrame)     
 
 # Perform PCA
 result = PCA_(df; scale=true, ncp=5, graph=true)
