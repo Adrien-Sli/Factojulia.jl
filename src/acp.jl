@@ -1,5 +1,3 @@
-say_hello() = print("hello") # test fonctionnement package
-
 """
     pre_data(df::DataFrame; scale::Bool=true, dropmissing_flag::Bool=true)
 
