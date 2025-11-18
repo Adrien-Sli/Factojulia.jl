@@ -60,7 +60,7 @@ cumvar = result.cumvar       # Cumulative variance explained
 - **Individuals factor map** – visualizes samples in PCA space with 4 quadrants
 - **Variables factor map** – correlation circle with variable arrows
 
-All plots are automatically displayed and saved in the src/test/plots folder.
+All plots are automatically displayed and saved in the *src/test/plots folder*.
 
 
 ## Advanced Usage
