@@ -46,6 +46,7 @@ function scree_plot(propvar::Vector{Float64})
     Plots.ylims!(p, (0, 100))
 
     display(p)
+    return p
 
 end
 
@@ -99,6 +100,7 @@ function plot_PCA_individuals(scores::Matrix{Float64};
     end
 
     display(p)
+    return p
 end
 
 """
@@ -163,6 +165,7 @@ function plot_PCA_variables(loadings::Matrix{Float64};
     end
 
     display(p)
+    return p
 end
 
 
@@ -227,6 +230,10 @@ A named tuple containing:
 - `ncp_used` : number of components actually used
 - `colnames` : names of numeric columns used in PCA
 """
+
+# Make a folder "plots" for plots inside of test folder
+plots_dir = joinpath(@__DIR__, "..", "test", "plots")
+isdir(plots_dir) || mkdir(plots_dir)
 
 function PCA_(df::DataFrame; scale::Bool = true, ncp::Int = 5, dropNa::Bool = true, graph::Bool = true)
     # ---------- Select numeric columns ----------
@@ -329,7 +336,11 @@ function PCA_(df::DataFrame; scale::Bool = true, ncp::Int = 5, dropNa::Bool = tr
 
         # scree plot uses propvar
         try
-            scree_plot(propvar)
+            fig1 = scree_plot(propvar)
+
+            # Save plot
+            save(joinpath(plots_dir, "scree.png"), fig1)
+
         catch err
             @warn "scree_plot not available or errored: $err"   
         end
@@ -338,14 +349,24 @@ function PCA_(df::DataFrame; scale::Bool = true, ncp::Int = 5, dropNa::Bool = tr
         # we pass the truncated scores & full loadings (or truncated loadings) depending on your plotting functions
         # plot individuals (uses scores matrix)
         try
-            plot_PCA_individuals(scores)  # if this function is defined earlier
+
+            fig2 = plot_PCA_individuals(scores)  # if this function is defined earlier
+
+            # Save plot
+            save(joinpath(plots_dir, "pca_individuals.png"), fig2)
+
         catch err
             @warn "plot_PCA_individuals not available or errored: $err"
         end
 
         # plot variables (we pass loadings; variable plot will usually show first 2 components)
         try
-            plot_PCA_variables(loadings; pcs=(1,2), var_names=numcols)
+
+            fig3 =plot_PCA_variables(loadings; pcs=(1,2), var_names=numcols)
+
+            # Save plot
+            save(joinpath(plots_dir, "pca_variables.png"), fig3)
+
         catch err
             @warn "plot_PCA_variables not available or errored: $err"
         end
