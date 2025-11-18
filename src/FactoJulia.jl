@@ -1,11 +1,15 @@
 module FactoJulia
 
 # Packages
-# Package for factorial analysis
 using CSV, DataFrames, Statistics, LinearAlgebra, MultivariateStats
-using Bonito # reactivity (zpp ?)
-using WGLMakie, Makie # graphs
+using Bonito       # reactivity
+using WGLMakie, Makie  # graphs
+using Printf, Plots
 
-include("pca.jl") # pca tools and visualisations
+# Include PCA functions
+include("pca.jl")
+
+# Export the functions
+export PCA_, scree_plot, plot_PCA_individuals, plot_PCA_variables, print_matrix
 
 end

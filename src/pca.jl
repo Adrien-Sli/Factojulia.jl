@@ -1,6 +1,7 @@
-using CSV, DataFrames, Statistics, LinearAlgebra, Plots
-
-
+using CSV, DataFrames, Statistics, LinearAlgebra
+using Plots   # explicitly import Plots functions
+import Plots: plot, plot!, scatter, bar, vline!, hline!, annotate!
+export PCA_, print_matrix, scree_plot, plot_PCA_individuals, plot_PCA_variables
 
 """
     scree_plot(propvar::Vector{Float64})
@@ -11,15 +12,13 @@ Generates a scree plot showing the percentage of variance explained by each prin
 - `propvar` : vector of percentage of variance explained by each component
 
 """
-
-
 function scree_plot(propvar::Vector{Float64})
 
     k = length(propvar)
     pc_index = 1:k
 
     # Bar plot for variance %
-    p = bar(pc_index, propvar;
+    p = Plots.bar(pc_index, propvar;
             legend = :topright,
             xlabel = "Dimensions",
             ylabel = "Percentage of variance explained",
@@ -30,7 +29,7 @@ function scree_plot(propvar::Vector{Float64})
             color = :lightblue)
 
     # Line connecting tops of bars
-    plot!(p, pc_index, propvar;
+    Plots.plot!(p, pc_index, propvar;
             lw = 2, marker = :circle, markersize = 4,
             label = "Variance explained (%)",
             color = :red,
@@ -40,17 +39,15 @@ function scree_plot(propvar::Vector{Float64})
     y_offset = maximum(propvar) * 0.06
     for (x, y) in zip(pc_index, propvar)
         lbl = string(round(y, digits=1), "%")
-        annotate!(p, x, y + y_offset, text(lbl, 9, :black))
+        Plots.annotate!(p, x, y + y_offset, Plots.text(lbl, 9, :black))
     end
 
     # Force y-axis
-    ylims!(p, (0, 100))
+    Plots.ylims!(p, (0, 100))
 
     display(p)
 
 end
-
-
 
 """
     plot_PCA_individuals(scores::Matrix{Float64};
@@ -62,7 +59,6 @@ Plots individuals on a PCA factor map with 4 quadrants.
 - `scores` : matrix of PCA scores (rows = individuals, columns = components)
 - `pcs` : tuple of component indices to plot, e.g., (1,2) for dim 1 vs dim 2
 """
-
 function plot_PCA_individuals(scores::Matrix{Float64};
                               pcs::Tuple{Int,Int} = (1,2))
 
@@ -80,7 +76,7 @@ function plot_PCA_individuals(scores::Matrix{Float64};
     ylims = (-lim, lim)
 
     # ---- Plot ----
-    p = scatter(x, y;
+    p = Plots.scatter(x, y;
         xlabel = "Dim $(pcs[1])",
         ylabel = "Dim $(pcs[2])",
         title = "PCA Individuals Factor Map (Dim $(pcs[1]) vs Dim $(pcs[2]))",
@@ -93,19 +89,17 @@ function plot_PCA_individuals(scores::Matrix{Float64};
     )
 
     # Heavy central axes (more visible)
-    vline!(p, [0], lw=1.8, linestyle=:dash, color=:black)
-    hline!(p, [0], lw=1.8, linestyle=:dash, color=:black)
+    Plots.vline!(p, [0], lw=1.8, linestyle=:dash, color=:black)
+    Plots.hline!(p, [0], lw=1.8, linestyle=:dash, color=:black)
 
     # Annotate above points
     y_off = (ylims[2] - ylims[1]) * 0.04  # relative offset
     for i in 1:length(x)
-        annotate!(p, x[i], y[i] + y_off, text(labels[i], :black, 8))
+        Plots.annotate!(p, x[i], y[i] + y_off, Plots.text(labels[i], :black, 8))
     end
 
     display(p)
 end
-
-
 
 """
     plot_PCA_variables(loadings::Matrix{Float64};
@@ -116,9 +110,8 @@ Plots variables on a PCA factor map with arrows from origin.
 # Arguments
 - `loadings` : matrix of PCA loadings (rows = variables, columns = components)
 - `pcs` : tuple of component indices to plot, e.g., (1,2) for PC1 vs PC2
-- `var_names` : vector of variable names; if empty, uses indices as names"""
-
-
+- `var_names` : vector of variable names; if empty, uses indices as names
+"""
 function plot_PCA_variables(loadings::Matrix{Float64};
                             pcs::Tuple{Int,Int} = (1,2),
                             var_names::Vector{String} = String[])
@@ -139,7 +132,7 @@ function plot_PCA_variables(loadings::Matrix{Float64};
     ylims = (-lim, lim)
 
     # ---- Base plot with equal aspect ratio ----
-    p = plot(
+    p = Plots.plot(
         xlabel = "Dim $(pcs[1])",
         ylabel = "Dim $(pcs[2])",
         title = "PCA Variables Factor Map (Dim $(pcs[1]) vs Dim $(pcs[2]))",
@@ -152,22 +145,21 @@ function plot_PCA_variables(loadings::Matrix{Float64};
 
     # ---- Draw unit correlation circle ----
     θ = range(0, 2π, length=300)
-    plot!(p, cos.(θ), sin.(θ); lw=1.0, linestyle=:dash, color=:gray)
+    Plots.plot!(p, cos.(θ), sin.(θ); lw=1.0, linestyle=:dash, color=:gray)
 
     # ---- Draw arrows for variables ----
     for i in 1:length(x)
-        plot!(p, [0, x[i]], [0, y[i]];
-              arrow=:arrow, lw=1.6, color=:blue)
+        Plots.plot!(p, [0, x[i]], [0, y[i]]; arrow=:arrow, lw=1.6, color=:blue)
     end
 
     # ---- Central axes ----
-    vline!(p, [0], lw=1.6, linestyle=:dash, color=:black)
-    hline!(p, [0], lw=1.6, linestyle=:dash, color=:black)
+    Plots.vline!(p, [0], lw=1.6, linestyle=:dash, color=:black)
+    Plots.hline!(p, [0], lw=1.6, linestyle=:dash, color=:black)
 
     # ---- Labels ----
     y_off = (ylims[2] - ylims[1]) * 0.04
     for i in 1:length(x)
-        annotate!(p, x[i], y[i] + y_off, text(var_names[i], :black, 9))
+        Plots.annotate!(p, x[i], y[i] + y_off, Plots.text(var_names[i], :black, 9))
     end
 
     display(p)
@@ -211,33 +203,32 @@ function print_matrix(name, mat, rownames)
 end
 
 
-
-
 """
-    PCA(X::DataFrame; scale::Bool=true, ncp::Int=5,  
-        dropNa::Bool=true, graph::Bool=true))
+    PCA_(df::DataFrame; scale::Bool = true, ncp::Int = 5,
+         dropNa::Bool = true, graph::Bool = true)
 
-FactoMineR PCA in Julia with optional automatic plotting.
-
+Performs Principal Component Analysis (PCA) on the numeric columns of the given DataFrame.
 # Arguments
-- `X` : DataFrame with numeric columns for PCA
-- `scale` : whether to standardize variables (true = correlation matrix, false = covariance matrix)
-- `ncp` : number of principal components to retain (not used in this implementation)
-- `dropNa` : whether to drop rows with missing values
-- `graph` : whether to generate PCA plots (individuals, variables, scree plot)
-
-
-Returns a Dict containing:
-- `cov_mat` : covariance or correlation matrix
-- `scores` : PCA scores for individuals 
-- `loadings` : PCA loadings for variables
-- `eigvals` : eigenvalues
-- `propvar` : percentage of variance explained by each component
-- `cumvar` : cumulative variance explained
+- `df` : input DataFrame
+- `scale` : whether to scale variables to unit variance (default: true)
+- `ncp` : number of principal components to retain (default: 5)
+- `dropNa` : whether to drop rows with missing values (default: true)
+- `graph` : whether to generate PCA plots (default: true)
+# Returns
+A named tuple containing:
+- `cov_mat` : covariance or correlation matrix used
+- `scores` : matrix of PCA scores (n × k)
+- `loadings` : matrix of PCA loadings (p × k)
+- `eigvals` : vector of eigenvalues
+- `propvar` : vector of percentage of variance explained by each component
+- `cumvar` : vector of cumulative variance explained
+- `var` : named tuple with variable metrics (coord, cos2, contrib)
+- `ncp_requested` : number of components requested
+- `ncp_used` : number of components actually used
 - `colnames` : names of numeric columns used in PCA
 """
 
-function PCA(df::DataFrame; scale::Bool = true, ncp::Int = 5, dropNa::Bool = true, graph::Bool = true)
+function PCA_(df::DataFrame; scale::Bool = true, ncp::Int = 5, dropNa::Bool = true, graph::Bool = true)
     # ---------- Select numeric columns ----------
     numcols = [name for name in names(df) if eltype(skipmissing(df[!, name])) <: Number]
     num_df = df[:, numcols]
