@@ -1,5 +1,5 @@
 using CSV, DataFrames, Statistics, LinearAlgebra
-using Plots   # explicitly import Plots functions
+using Plots # for plotting functions
 import Plots: plot, plot!, scatter, bar, vline!, hline!, annotate!
 export PCA_, print_matrix, scree_plot, plot_PCA_individuals, plot_PCA_variables
 
