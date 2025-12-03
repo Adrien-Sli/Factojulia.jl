@@ -3,7 +3,6 @@ module FactoJulia
 # Packages
 using CSV, DataFrames, Statistics, LinearAlgebra, MultivariateStats
 using Bonito       # reactivity
-using WGLMakie, Makie  # graphs
 using Printf, Plots
 
 # Include PCA functions
