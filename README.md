@@ -28,7 +28,7 @@ Pkg.add("https://github.com/Adrien-Sli/Factojulia.jl.git")
 Or, for development:
 
 ```julia
-Pkg.clone("https://github.com/yourusername/FactoJulia.jl.git")
+Pkg.clone("https://github.com/Adrien-Sli/FactoJulia.jl.git")
 Pkg.activate("FactoJulia.jl")
 ```
 
