@@ -7,20 +7,25 @@ using LinearAlgebra
 using MultivariateStats: PCA, fit, principalvars, projection, loadings
 using PyPlot
 
-export run_pca, screeplot, plot_individuals, plot_variables
-
+export PCAResult, run_pca, screeplot, plot_individuals, plot_variables
+mutable struct PCAResult
+    pca::PCA
+    eigenvalues::Vector{Float64}
+    explained::Vector{Float64}
+    loadings::Matrix{Float64}
+    scores::Matrix{Float64}
+    columns::Vector{String}
+end
 #Load data + PCA (standardized like FactoMineR)
-function run_pca(path::String)
-
-    if !isfile(path)
-        error("Fichier introuvable : $path")
-    end
+ function run_pca(path::String)
+    isempty(path) && error("Chemin de fichier vide")
+    isfile(path) || error("Fichier introuvable : $path")
 
     df = CSV.read(path, DataFrame)
 
     # Colonnes numériques
     numcols = [name for name in names(df) if eltype(skipmissing(df[!, name])) <: Number]
-    isempty(numcols) && error("Aucune colonne numérique détectée.")
+    isempty(numcols) && error("Aucune colonne numérique détectée")
 
     X = Matrix(df[:, numcols])
 
@@ -31,22 +36,14 @@ function run_pca(path::String)
     Xs = (X .- μ) ./ σ
 
     # PCA
-    pca = fit(PCA, Xs; maxoutdim=min(size(Xs)...))
+    pca_model = fit(PCA, Xs; maxoutdim=min(size(Xs)...))
+    eigenvalues = principalvars(pca_model)
+    explained = eigenvalues ./ sum(eigenvalues) .* 100
+    load_mat = loadings(pca_model)
+    scores = projection(pca_model)
 
-    eigenvalues = principalvars(pca)
-    explained   = eigenvalues ./ sum(eigenvalues) .* 100
-    load_mat    = loadings(pca)
-    scores      = projection(pca)
-
-    return (
-        pca=pca,
-        eigenvalues=eigenvalues,
-        explained=explained,
-        loadings=load_mat,
-        scores=scores,
-        columns=numcols
-    )
-end
+    return PCAResult(pca_model, eigenvalues, explained, load_mat, scores, numcols)
+end  
 
 
 
@@ -134,3 +131,4 @@ function plot_variables(loadings, columns)
 end
 
 end # module
+
