@@ -17,7 +17,7 @@ mutable struct PCAResult
     columns::Vector{String}
 end
 #Load data + PCA (standardized like FactoMineR)
- function run_pca(path::String)
+function run_pca(path::String)
     isempty(path) && error("Chemin de fichier vide")
     isfile(path) || error("Fichier introuvable : $path")
 
@@ -41,9 +41,8 @@ end
     explained = eigenvalues ./ sum(eigenvalues) .* 100
     load_mat = loadings(pca_model)
     scores = projection(pca_model)
-
     return PCAResult(pca_model, eigenvalues, explained, load_mat, scores, numcols)
-end  
+end 
 
 
 
@@ -131,4 +130,5 @@ function plot_variables(loadings, columns)
 end
 
 end # module
+
 
