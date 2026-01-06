@@ -1,17 +1,19 @@
 module UI
 
 using Bonito
-using PCAAnalysis
-using PCAPlots
+using ..PCAAnalysis: compute_PCA
 using CSV, DataFrames
 
 bouton_input_file = Bonito.FileInput()
+on(bouton_input_file.value) do file
+    @show file
+end
 bouton_lancement = Bonito.Button("Lancer l'analyse")
 on(bouton_lancement.value) do click::Bool
     println("Click")
-    df = CSV.read(bouton_input_file[][1].path, DataFrame)
+    df = CSV.read(bouton_input_file[][1], DataFrame)
     println("en memoire")
-    resultat_acp = PCAAnalysis.compute_PCA(df)
+    resultat_acp = compute_PCA(df)
     println("acp prête")
     #TODO graphiques à afficher 
 end
