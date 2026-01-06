@@ -1,0 +1,169 @@
+using Bonito
+
+html = """
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport FactoJulia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 60px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .cover {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        img {
+            margin-bottom: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #999;
+            padding: 8px;
+            text-align: center;
+        }
+        hr {
+            margin: 50px 0;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="cover">
+    <img src="logo.png" width="150">
+    <h1>Rapport de projet – FactoJulia</h1>
+    <h2>Master 1 – Statistique et Data Science</h2>
+    <p><strong>Auteurs :</strong> Adrien Slifirski , Miller Abessolo , Keevson Judlin Val, Stave Icnel Dany Osias, Hanaa Hajmi</p>
+    <p><strong>Date :</strong> 02/01/2026</p>
+</div>
+
+<hr>
+
+<h2>1. Introduction</h2>
+<p>
+Ce projet a été réalisé dans le cadre d’un travail de groupe visant à développer un package Julia inspiré du package <strong>FactoMineR</strong> disponible en R.
+L’objectif est de proposer une alternative performante permettant de réaliser des analyses factorielles à l’aide du langage Julia.
+</p>
+
+<h2>2. Objectifs du projet</h2>
+<ul>
+    <li>Comprendre la structure d’un package Julia</li>
+    <li>Implémenter des méthodes d’analyse factorielle</li>
+    <li>Reproduire certaines fonctionnalités de FactoMineR</li>
+    <li>Mettre en pratique le travail collaboratif via GitHub</li>
+</ul>
+
+<h2>3. Présentation du package FactoJulia</h2>
+<p>
+FactoJulia est un package développé en Julia permettant de réaliser des analyses factorielles,
+notamment l’Analyse en Composantes Principales (ACP).
+Le projet met l’accent sur la lisibilité du code, la modularité et les performances.
+</p>
+
+<h3>Fonctionnalités implémentées</h3>
+<ul>
+    <li>Analyse en Composantes Principales (ACP)</li>
+    <li>Calcul des valeurs propres et vecteurs propres</li>
+    <li>Projection des individus sur les axes factoriels</li>
+    <li>Visualisation des résultats</li>
+</ul>
+
+<h2>4. Architecture du dépôt GitHub</h2>
+<p>Le dépôt GitHub du projet est organisé de la manière suivante :</p>
+<ul>
+    <li><code>src/</code> : code source principal du package</li>
+    <li><code>test/</code> : scripts de test et validation</li>
+    <li><code>.github/</code> : workflows et configuration GitHub</li>
+    <li><code>Project.toml</code> : dépendances et métadonnées du package</li>
+    <li><code>README.md</code> : documentation et guide d’utilisation</li>
+    <li><code>LICENSE</code> : licence MIT</li>
+</ul>
+
+<h2>5. Exemple d’utilisation</h2>
+<pre><code>
+using FactoJulia
+
+data = rand(100, 5)
+result = pca(data)
+</code></pre>
+
+<h2>6. Comparaison avec FactoMineR</h2>
+<table>
+    <tr>
+        <th>Critère</th>
+        <th>FactoMineR (R)</th>
+        <th>FactoJulia (Julia)</th>
+    </tr>
+    <tr>
+        <td>Langage</td>
+        <td>R</td>
+        <td>Julia</td>
+    </tr>
+    <tr>
+        <td>Performance</td>
+        <td>Bonne</td>
+        <td>Très bonne</td>
+    </tr>
+    <tr>
+        <td>Maturité</td>
+        <td>Très élevée</td>
+        <td>En développement</td>
+    </tr>
+    <tr>
+        <td>Extensibilité</td>
+        <td>Limitée</td>
+        <td>Élevée</td>
+    </tr>
+</table>
+
+<h2>7. Limites et perspectives</h2>
+<ul>
+    <li>Fonctionnalités avancées encore manquantes</li>
+    <li>Amélioration des visualisations</li>
+    <li>Ajout de nouvelles méthodes statistiques</li>
+    <li>Optimisation et factorisation du code</li>
+</ul>
+
+<h2>8. Conclusion</h2>
+<p>
+Ce projet nous a permis d’approfondir la conception d’un package Julia,
+la mise en œuvre d’algorithmes statistiques et le travail collaboratif via GitHub.
+FactoJulia constitue une base solide pour de futures extensions.
+</p>
+
+<hr>
+
+<h2>9. Dépôt GitHub</h2>
+<p>
+<a href="https://github.com/Adrien-Sli/Factojulia.jl">
+https://github.com/Adrien-Sli/Factojulia.jl
+</a>
+</p>
+
+</body>
+</html>
+"""
+
+# Écriture du fichier HTML (ENDROIT SÛR)
+output = joinpath(@__DIR__, "rapport_factojulia.html")
+open(output, "w") do f
+    write(f, html)
+end
+
+println("✅ Rapport généré ici :")
+println(output)
